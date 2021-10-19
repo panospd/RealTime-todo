@@ -15,8 +15,8 @@
           <td>
             <router-link :to="{ name: 'List', params: { listId: l.id }}">{{l.name}}</router-link>
           </td>
-          <td> {{l.items | pendingCount }} </td>
-          <td> {{l.items | completedCount }} </td>
+          <td> {{l.pending }} </td>
+          <td> {{l.completed }} </td>
         </tr>
       </tbody>
     </table>
@@ -26,34 +26,21 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 
-@Component({
-  filters: {
-    pendingCount: (value: any) => {
-      if (!value)
-      {
-        return 0;
-      }
-      var res = value.filter((p: any) => !p.isCompleted)
-      return res.length;
-    },
-    completedCount: (value: any) => {
-      if (!value)
-      {
-        return 0;
-      }
-      var res = value.filter((p: any) => p.isCompleted)
-      return res.length;
-    }
-  }
-})
+@Component({})
 export default class Home extends Vue {
   lists: any[] = [];
 
   async created() {
-    this.$connectionService.getLists()
     this.$connectionService.events.on("updatedToDoList", (values: any[]) => {
       this.lists = values
     })
+
+    this.$connectionService.getLists()
+    this.$connectionService.subscribeToCountUpdates();
+  }
+
+  beforeDestroy(){
+    this.$connectionService.unSubscribeFromCountUpdates();
   }
 }
 </script>
