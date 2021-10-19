@@ -1,22 +1,34 @@
 import Vue, { PluginObject, VueConstructor } from "vue"
-import {HubConnectionBuilder, LogLevel } from "@microsoft/signalr"
+import { EventEmitter } from "events"
+import { HubConnectionBuilder, HubConnectionState, LogLevel } from "@microsoft/signalr"
 
 export default class ToDoService {
     connection: signalR.HubConnection;
+    events: EventEmitter
     constructor() {
+        this.events = new EventEmitter();
         this.connection = new HubConnectionBuilder()
             .configureLogging(LogLevel.Trace)
             .withUrl("/hubs/todo")
-            .build();        
+            .build();
+
+        this.connection.on("updatedToDoList", (values: any[]) => {
+            console.log(values)
+            this.events.emit("updatedToDoList", values)
+        })
     }
 
     async start() {
         await this.connection.start();
     }
 
-    async getLists() {
-        const result = await this.connection.invoke("getLists");
-        return result;
+    getLists() {
+
+        if (this.connection.state === HubConnectionState.Connected) {
+            return this.connection.send("GetLists");
+        }
+
+        setTimeout(() => this.getLists(), 500);
     }
 }
 

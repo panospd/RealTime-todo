@@ -13,7 +13,7 @@ import { Component, Vue } from 'vue-property-decorator';
 @Component({})
 export default class App extends Vue {
   async startConnection() {
-    await this.$connectionService.start();
+      await this.$connectionService.start();
   }
   async created() {
     await this.startConnection();
