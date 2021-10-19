@@ -56,9 +56,5 @@ export default class Home extends Vue {
       pending: 20
     })
   }
-
-  created() {
-    this.demoList();
-  }
 }
 </script>

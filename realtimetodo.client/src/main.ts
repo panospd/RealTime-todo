@@ -1,8 +1,9 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
+import { ConnectionServices } from './services/todoService'
 
-Vue.config.productionTip = false
+Vue.use(ConnectionServices);
 
 new Vue({
   router,
